@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html ng-app="sim">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Asylamba Simulator</title>
+    <link href="src/css/design.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-cookies.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.min.js"></script>
+</head>
+<body ng-controller="main" ng-init="user = 'attacker'">
+
+
+    <div class="container">
+        <h1>
+            <img src="http://game.asylamba.com/s7/public/media/map/action/loot.png">
+            Simulateur de combats
+        </h1>
+        <div class="user-selector">
+            <div ng-click="user = 'attacker'" ng-class="{active:user == 'attacker'}">
+                <div>
+                    <img src="http://game.asylamba.com/s7/public/media/common/nav-fleet-attack.png">
+                </div>
+                Flotte en attaque
+            </div>
+            <div ng-click="user = 'defender'" ng-class="{active:user == 'defender'}">
+                <div>
+                    <img src="http://game.asylamba.com/s7/public/media/common/nav-fleet-defense.png">
+                </div>
+                Flotte en défense
+            </div>
+        </div>
+
+        <div class="panel">
+            <div fleet="attacker" ng-show="user == 'attacker'"></div>
+            <div fleet="defender" ng-show="user == 'defender'"></div>
+
+            <div class="block important">
+                Nombre de simulations
+                <div class="btn" ng-click="run()"><i class="fa fa-play"></i> Lancer</div>
+                <input type="number" min="1" max="10000" ng-model="numberIterations">
+            </div>
+        </div>
+    </div>
+
+    <script src="src/ships.js"></script>
+    <script src="src/app.js"></script>
+    <script src="src/directives/fleet.js"></script>
+    <script src="src/directives/squadron.js"></script>
+</body>
+</html>

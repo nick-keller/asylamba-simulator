@@ -1,0 +1,54 @@
+<div style="display: inline-block;vertical-align: top">
+    <div>
+        <div class="line" ng-repeat="line in fleet.slice().reverse()">
+            <strong>#{{ 5-$index }}</strong>
+            <div squadron="squadron" id="$index + 5* (4-$parent.$index) +1"
+                 ng-repeat="squadron in line track by $index"
+                 active="isSquadronSelected(4-$parent.$index, $index)"
+                 ng-click="selectSquadron(4-$parent.$index, $index)"></div>
+        </div>
+    </div>
+    <table>
+        <tr>
+            <td>
+                Total PEV
+                <span class="value">
+                    {{ totalPev() }}
+                    <img src="http://game.asylamba.com/s7/public/media/resources/pev.png">
+                </span>
+            </td>
+            <td style="width: 50%">
+                Sauvegarder
+                <div class="btn" ng-click="save()">
+                    <i class="fa fa-floppy-o"></i>
+                </div>
+                <input placeholder="Nom..." style="width: 172px" ng-keypress="save($event)" ng-model="compoName">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                Charger
+                <span class="btn" ng-click="updateCompos()">
+                    <i class="fa fa-refresh"></i>
+                </span>
+                <span class="value" ng-if="!compos.length">
+                    Aucune compo
+                </span>
+                <div ng-repeat="compo in compos" ng-click="load(compo.name)" class="compo">
+                    {{ $index+1 }}.
+                    {{ compo.name }}
+                    <span ng-click="remove(compo.name)">x</span>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="list-ship">
+    <label class="ship" ng-repeat="ship in selectedSquadron track by $index" ng-class="{empty:!ship}">
+        <img src="http://game.asylamba.com/s7/public/media/ship/picto/ship{{ $index }}.png">
+        <span class="text">
+            <input type="number" min="0" ng-model="selectedSquadron[$index]">
+            <span>{{ $parent.$parent.ships[$index].name }}</span>
+        </span>
+    </label>
+</div>

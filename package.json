@@ -1,0 +1,7 @@
+{
+  "name": "asylamba-simulator",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-less": "^3.0.3"
+  }
+}
