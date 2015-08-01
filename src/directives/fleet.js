@@ -25,7 +25,7 @@ angular.module('sim')
 
                 $scope.compos.push({
                     name: name,
-                    data: JSON.parse(json)
+                    data: decodeFleet(json)
                 });
             });
         };
@@ -45,14 +45,14 @@ angular.module('sim')
 
         $scope.save = function($event) {
             if($scope.compoName && (!$event || $event.keyCode == 13)) {
-                $cookies.put($scope.compoName, JSON.stringify($scope.fleet));
+                $cookies.put($scope.compoName, encodeFleet($scope.fleet));
                 $scope.updateCompos();
             }
         };
 
         $scope.load = function(name) {
             $scope.compoName = name;
-            $scope.fleet = JSON.parse($cookies.get(name));
+            $scope.fleet = decodeFleet($cookies.get(name));
             $scope.selectSquadron(0,0);
         };
 
