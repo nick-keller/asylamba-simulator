@@ -44,7 +44,8 @@ function runSimulations(args) {
         fleets[i1][i2][i3] = [];
         for (var i = 0; i < 12; i++) {
           for (var j = squad[i]; j >= 0; j--) {
-            fleets[i1][i2][i3].push(createNewShip(i));
+            // Pushing the correct number of this ship in the squad
+            fleets[i1][i2][i3].push(clone.ships[i]);
           }
         }
 
@@ -91,46 +92,4 @@ function runSimulations(args) {
   }
 
   return 0;
-}
-
-function createNewShip (shipID) {
-  // 0: Pégase done
-  // 1: Satyre
-  // 2: Chimère
-  // 3: Sirène
-  // 4: Dryade
-  // 5: Méduse
-  // 6: Griffon
-  // 7: Cyclope
-  // 8: Minotaure
-  // 9: Hydre
-  // 10: Cerbère
-  // 11: Phénix
-  throw 'FUNCTON NOT FINISHED YET';
-
-  // ToDo::Ben Use ships.js
-
-  if (shipID === 0) {
-    return {
-      nom: 'Pégase',
-      defense: 1,
-      vitesse: 195,
-      coque: 26,
-      pev: 2,
-      attaques: [5]
-    };
-  }
-
-  if (shipID === 2) {
-    return {
-      nom: 'Chimère',
-      defense: 3,
-      vitesse: 195,
-      coque: 26,
-      pev: 3,
-      attaques: [6, 6]
-    };
-  }
-
-
 }
