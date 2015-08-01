@@ -1,12 +1,12 @@
 'use strict';
 
-var flottes = [];
+var fleets = [];
 
 // WRITE OPTIMIZED CODE IN HERE
 function simulation () {
-  // ToDo::Ben Faire la logique de la simulation
+  // ToDo::Ben Do the simulation logic
 
-  // Simulation terminée
+  // Simulation finished
   postMessage({
     type: 'finishedSimulation',
     data: ''
@@ -15,8 +15,8 @@ function simulation () {
 
 onmessage = function(e) {
   
-  if (e.type === 'flottes') {
-    flottes = e.data;
+  if (e.type === 'fleets') {
+    fleets = e.data;
     return;
   }
 

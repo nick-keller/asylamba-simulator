@@ -4,16 +4,16 @@ function runSimulations(args) {
   // argument capture
   var iterations = args.iterations;
 
-  var floteTest = [
+  var testFleet = [
     [[7,4,3,0,2,0,0,0,0,0,0,0],[4,4,0,4,3,0,4,0,0,0,0,0],[2,2,0,3,0,0,2,3,0,2,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
     [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
     [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
     [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
     [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]]
   ];
-  var flottes = [
-            args.flotteAttaquant || JSON.decode(JSON.encode(floteTest)),
-            args.flotteDefendant || JSON.decode(JSON.encode(floteTest))
+  var fleets = [
+            args.attackingFleet || testFleet.slice()),
+            args.defendingFleet || testFleet.slice())
   ];
 
 
@@ -34,17 +34,17 @@ function runSimulations(args) {
   }
 
   
-  // Creation de chaque vaisseau individuel dans la flotte
+  // Splitting every individual ship
   for (var i1 = 0; i1 < 2; i1++) {
     for (var i2 = 0; i2 < 5; i2++) {
        for (var i3 = 0; i3 < 5; i3++) {
 
-        // Transcription de l'escadrille
-        var escadrille = flottes[i1][i2][i3]; // quantité de vaisseaux sauvegardée
-        flottes[i1][i2][i3] = [];
+        // Squad transcription
+        var squad = fleets[i1][i2][i3]; // Saved ship quantity
+        fleets[i1][i2][i3] = [];
         for (var i = 0; i < 12; i++) {
-          for (var j = escadrille[i]; j >= 0; j--) {
-            flottes[i1][i2][i3].push(createNewShip(i));
+          for (var j = squad[i]; j >= 0; j--) {
+            fleets[i1][i2][i3].push(createNewShip(i));
           }
         }
 
@@ -55,19 +55,19 @@ function runSimulations(args) {
   var worker = new Worker('task.js');
   worker.postMessage();
 
-  // On passe les flottes utilisées pour qu'il les enregistre une fois pour toutes
+  // Pass the used fleets
   worker.postMessage({
-    type: 'flottes',
-    data: flottes
+    type: 'fleets',
+    data: fleets
   });
 
-  // On prepare l'appel recusif
+  // Preparing recursive call
   myWorker.onmessage = function(e) {
 
     if (e.type === 'finishedSimulation') {
-      // ToDo::Nico Mettre a jour l'UI d'avancement en fonction de iterations (le nombre d'iterations restantes) et e.data (le resultat de cette simulation)
+      // ToDo::Nico Update UI with 'iterations' and 'e.data'
 
-      // Si on a pas atteint l'iteration zero, on relance une simulation
+      // If we haven't reached the final loop, start another simulation
       if (iterations--) {
         worker.postMessage({
           type: 'simulation'
@@ -75,7 +75,7 @@ function runSimulations(args) {
         return;
       }
 
-      // Si oui, on signale que la simulation est terminée
+      // Else, finish the simulation loop
       worker.terminate();
       // Do stuff
       
@@ -90,6 +90,7 @@ function runSimulations(args) {
 
   }
 
+  return 0;
 }
 
 function createNewShip (shipID) {
@@ -107,7 +108,7 @@ function createNewShip (shipID) {
   // 11: Phénix
   throw 'FUNCTON NOT FINISHED YET';
 
-  // ToDo::Ben Utiliser le fichier ships.js
+  // ToDo::Ben Use ships.js
 
   if (shipID === 0) {
     return {
@@ -115,18 +116,18 @@ function createNewShip (shipID) {
       defense: 1,
       vitesse: 195,
       coque: 26,
-      pev: 2, // Useless?
+      pev: 2,
       attaques: [5]
     };
   }
 
   if (shipID === 2) {
     return {
-      nom: 'Pégase',
+      nom: 'Chimère',
       defense: 3,
       vitesse: 195,
       coque: 26,
-      pev: 3, // Useless?
+      pev: 3,
       attaques: [6, 6]
     };
   }
