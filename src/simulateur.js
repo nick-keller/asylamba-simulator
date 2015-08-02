@@ -12,8 +12,8 @@ function runSimulations(args) {
     [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]]
   ];
   var fleets = [
-            args.attackingFleet || testFleet.slice()),
-            args.defendingFleet || testFleet.slice())
+            args.attackingFleet || testFleet.slice(),
+            args.defendingFleet || testFleet.slice()
   ];
 
 
@@ -45,7 +45,7 @@ function runSimulations(args) {
         for (var i = 0; i < 12; i++) {
           for (var j = squad[i]; j >= 0; j--) {
             // Pushing the correct number of this ship in the squad
-            fleets[i1][i2][i3].push(clone.ships[i]);
+            fleets[i1][i2][i3].push(_.cloneDeep(ships[i]));
           }
         }
 
@@ -54,7 +54,6 @@ function runSimulations(args) {
   }
 
   var worker = new Worker('task.js');
-  worker.postMessage();
 
   // Pass the used fleets
   worker.postMessage({
@@ -63,10 +62,11 @@ function runSimulations(args) {
   });
 
   // Preparing recursive call
-  myWorker.onmessage = function(e) {
+  worker.onmessage = function(e) {
 
     if (e.type === 'finishedSimulation') {
       // ToDo::Nico Update UI with 'iterations' and 'e.data'
+      console.log(iterations, e.data);
 
       // If we haven't reached the final loop, start another simulation
       if (iterations--) {
@@ -89,7 +89,7 @@ function runSimulations(args) {
     console.log('\ndata:');
     console.log(e.data);
 
-  }
+  };
 
   return 0;
 }

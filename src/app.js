@@ -19,7 +19,11 @@ angular.module('sim', ['ngCookies'])
             var attacker = _.cloneDeep($scope.attacker);
             var defender = _.cloneDeep($scope.defender);
 
-            // TODO
+            runSimulations({
+                attackingFleet: attacker,
+                defendingFleet: defender,
+                iterations: $scope.numberIterations
+            });
         }
     })
     .filter('reverse', function() {
