@@ -33,7 +33,7 @@ function runSimulations(args) {
     return 0;
   }
 
-  
+
   // Splitting every individual ship
   for (var i1 = 0; i1 < 2; i1++) {
     for (var i2 = 0; i2 < 5; i2++) {
@@ -53,7 +53,7 @@ function runSimulations(args) {
     }
   }
 
-  var worker = new Worker('task.js');
+  var worker = new Worker('src/task.js');
 
   // Pass the used fleets
   worker.postMessage({
@@ -63,10 +63,14 @@ function runSimulations(args) {
 
   // Preparing recursive call
   worker.onmessage = function(e) {
+    if (e.data.type === 'log') {
+      console.log('Worker log:\n' + e.data.value);
+      return;
+    }
 
-    if (e.type === 'finishedSimulation') {
+    if (e.data.type === 'finishedSimulation') {
       // ToDo::Nico Update UI with 'iterations' and 'e.data'
-      console.log(iterations, e.data);
+      console.log(iterations, e.data.value);
 
       // If we haven't reached the final loop, start another simulation
       if (iterations--) {
@@ -79,17 +83,21 @@ function runSimulations(args) {
       // Else, finish the simulation loop
       worker.terminate();
       // Do stuff
-      
+
       return;
     }
 
     console.log('Unknown message received from worker.');
     console.log('\ntype:');
-    console.log(e.type);
+    console.log(e.data.type);
     console.log('\ndata:');
-    console.log(e.data);
+    console.log(e.data.value);
 
   };
+
+  worker.postMessage({
+    type: 'simulation'
+  });
 
   return 0;
 }
