@@ -3,6 +3,7 @@ function runSimulations(args) {
 
   // argument capture
   var iterations = args.iterations;
+  var counter = iterations;
 
   var testFleet = [
     [[7,4,3,0,2,0,0,0,0,0,0,0],[4,4,0,4,3,0,4,0,0,0,0,0],[2,2,0,3,0,0,2,3,0,2,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
@@ -11,10 +12,10 @@ function runSimulations(args) {
     [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
     [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]]
   ];
-  var fleets = [
-            args.attackingFleet || testFleet.slice(),
-            args.defendingFleet || testFleet.slice()
-  ];
+  var fleets = {
+    attacking: args.attackingFleet || testFleet.slice(),
+    defending: args.defendingFleet || testFleet.slice()
+  };
 
 
   // Throwing cases
@@ -33,26 +34,6 @@ function runSimulations(args) {
     return 0;
   }
 
-
-  // Splitting every individual ship
-  for (var i1 = 0; i1 < 2; i1++) {
-    for (var i2 = 0; i2 < 5; i2++) {
-       for (var i3 = 0; i3 < 5; i3++) {
-
-        // Squad transcription
-        var squad = fleets[i1][i2][i3]; // Saved ship quantity
-        fleets[i1][i2][i3] = [];
-        for (var i = 0; i < 12; i++) {
-          for (var j = squad[i]; j >= 0; j--) {
-            // Pushing the correct number of this ship in the squad
-            fleets[i1][i2][i3].push(_.cloneDeep(ships[i]));
-          }
-        }
-
-      }
-    }
-  }
-
   var worker = new Worker('src/task.js');
 
   // Pass the used fleets
@@ -69,11 +50,11 @@ function runSimulations(args) {
     }
 
     if (e.data.type === 'finishedSimulation') {
-      // ToDo::Nico Update UI with 'iterations' and 'e.data'
-      console.log(iterations, e.data.value);
+      // ToDo::Nico -- Update UI with 'iterations', 'counter', and 'e.data'
+      console.log(counter, e.data.value);
 
       // If we haven't reached the final loop, start another simulation
-      if (iterations--) {
+      if (counter-- !== 0) {
         worker.postMessage({
           type: 'simulation'
         });
@@ -82,7 +63,7 @@ function runSimulations(args) {
 
       // Else, finish the simulation loop
       worker.terminate();
-      // Do stuff
+      // ToDo::Nico -- Stuff to do when simulation ends goes here
 
       return;
     }
@@ -95,6 +76,7 @@ function runSimulations(args) {
 
   };
 
+  // Here we goooooooo
   worker.postMessage({
     type: 'simulation'
   });
