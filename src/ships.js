@@ -22,6 +22,7 @@ var ships = [
     coque: 26,
     pev: 3,
     attaques: [6, 6]
+  },
   {
     name: 'Sirene',
     defense: 6,
