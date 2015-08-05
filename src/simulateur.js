@@ -1,5 +1,5 @@
 
-function runSimulations(args) {
+function runSimulations(args, $scope) {
 
   // argument capture
   var iterations = args.iterations;
@@ -61,6 +61,11 @@ function runSimulations(args) {
     data: fleets
   });
 
+  var updateProgress = _.debounce(function(progress) {
+    $scope.progress = progress;
+    $scope.$apply();
+  }, 500, {maxWait: 500});
+
   // Preparing recursive call
   worker.onmessage = function(e) {
     if (e.data.type === 'log') {
@@ -69,14 +74,15 @@ function runSimulations(args) {
     }
 
     if (e.data.type === 'finishedSimulation') {
-      // ToDo::Nico Update UI with 'iterations' and 'e.data'
-      console.log(iterations, e.data.value);
+      updateProgress(100 - iterations/$scope.numberIterations *100);
 
       // If we haven't reached the final loop, start another simulation
       if (iterations--) {
-        worker.postMessage({
-          type: 'simulation'
-        });
+        //setTimeout(function() {
+          worker.postMessage({
+            type: 'simulation'
+          });
+        //}, 10);
         return;
       }
 

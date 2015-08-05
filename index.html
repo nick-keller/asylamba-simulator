@@ -40,6 +40,9 @@
                 Nombre de simulations
                 <div class="btn" ng-click="run()"><i class="fa fa-play"></i> Lancer</div>
                 <input type="number" min="1" max="10000" ng-model="numberIterations">
+                <div class="progress-bar">
+                    <div style="width: {{ progress }}%"></div>
+                </div>
             </div>
         </div>
     </div>

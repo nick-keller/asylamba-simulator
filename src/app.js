@@ -3,6 +3,7 @@ angular.module('sim', ['ngCookies'])
         $scope.attacker = [];
         $scope.defender = [];
         $scope.numberIterations = 1000;
+        $scope.progress = 0;
 
         for(var line = 0; line <5; ++line) {
             $scope.attacker.push([]);
@@ -18,12 +19,13 @@ angular.module('sim', ['ngCookies'])
         $scope.run = function() {
             var attacker = _.cloneDeep($scope.attacker);
             var defender = _.cloneDeep($scope.defender);
+            $scope.progress = 0;
 
             runSimulations({
                 attackingFleet: attacker,
                 defendingFleet: defender,
                 iterations: $scope.numberIterations
-            });
+            }, $scope);
         }
     })
     .filter('reverse', function() {
