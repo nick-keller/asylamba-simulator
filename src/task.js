@@ -176,38 +176,13 @@ function Fleet () {
 
   this.getRandomSquad = function() {
 
-    // ToDo::Ben -- FUCK THIS FUCKING PIECE OF SHIT. BRUTE FORCE FOR NOW
-    var i = getRandomInt(0, 4);
-    var j = getRandomInt(0, 4);
+    var tab = [];
 
-    if (this.squads[i][j] === undefined || this.squads[i][j].isEmpty())
-      return this.getRandomSquad();
+    this.squads.forEach(function(line) {
+      tab = tab.concat(line);
+    });
 
-    return this.squads[i][j];
-
-
-
-    // var squadCount = 0;
-
-    // for (var i = this.squads.length - 1; i >= 0; i--)
-    //   squadCount += this.squads[i].length;
-
-    // var randomIndex = getRandomInt(0, squadCount-1);
-
-    // console.log(randomIndex);
-
-    // for (var i = 0; i < this.squads.length - 1; i++) {
-
-    //   console.log(randomIndex, this.squads[i].length)
-    //   if (randomIndex >= this.squads[i].length) {
-    //     randomIndex -= this.squads[i].length;
-    //     continue;
-    //   }
-
-    //   return this.squads[i][randomIndex];
-    // }
-
-    // throw 'NOT SUPPOSED TO ARRIVE HERE';
+    return tab[Math.floor(Math.random() * tab.length)];
 
   };
 
