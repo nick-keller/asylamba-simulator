@@ -3,18 +3,19 @@ function runSimulations(args, $scope) {
 
   // argument capture
   var iterations = args.iterations;
+  var counter = iterations;
 
   var testFleet = [
-    [[7,4,3,0,2,0,0,0,0,0,0,0],[4,4,0,4,3,0,4,0,0,0,0,0],[2,2,0,3,0,0,2,3,0,2,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
-    [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
-    [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
-    [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
-    [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]]
+    [[9,4,3,0,2,0,0,0,0,0,0,0],[9,4,0,4,3,0,4,0,0,0,0,0],[9,2,0,3,0,0,2,3,0,2,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0]],
+    [[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0]],
+    [[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0]],
+    [[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0]],
+    [[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0]]
   ];
-  var fleets = [
-            args.attackingFleet || testFleet.slice(),
-            args.defendingFleet || testFleet.slice()
-  ];
+  var fleets = {
+    attacking: /*args.attackingFleet ||*/ testFleet.slice(),
+    defending: /*args.defendingFleet ||*/ testFleet.slice()
+  };
 
 
   // Throwing cases
@@ -33,32 +34,12 @@ function runSimulations(args, $scope) {
     return 0;
   }
 
-
-  // Splitting every individual ship
-  for (var i1 = 0; i1 < 2; i1++) {
-    for (var i2 = 0; i2 < 5; i2++) {
-       for (var i3 = 0; i3 < 5; i3++) {
-
-        // Squad transcription
-        var squad = fleets[i1][i2][i3]; // Saved ship quantity
-        fleets[i1][i2][i3] = [];
-        for (var i = 0; i < 12; i++) {
-          for (var j = squad[i]; j >= 0; j--) {
-            // Pushing the correct number of this ship in the squad
-            fleets[i1][i2][i3].push(_.cloneDeep(ships[i]));
-          }
-        }
-
-      }
-    }
-  }
-
   var worker = new Worker('src/task.js');
 
-  // Pass the used fleets
+  // Pass the ships object
   worker.postMessage({
-    type: 'fleets',
-    data: fleets
+    type: 'ships.js',
+    value: ships
   });
 
   var updateProgress = _.debounce(function(progress) {
@@ -68,27 +49,29 @@ function runSimulations(args, $scope) {
 
   // Preparing recursive call
   worker.onmessage = function(e) {
-    if (e.data.type === 'log') {
-      console.log('Worker log:\n' + e.data.value);
-      return;
-    }
 
     if (e.data.type === 'finishedSimulation') {
       updateProgress(100 - iterations/$scope.numberIterations *100);
 
       // If we haven't reached the final loop, start another simulation
-      if (iterations--) {
-        //setTimeout(function() {
-          worker.postMessage({
-            type: 'simulation'
-          });
-        //}, 10);
+      if (counter-- !== 0) {
+
+        // Pass the used fleets
+        // ToDo::Ben -- Switch the fleets creation to the browser
+        worker.postMessage({
+          type: 'fleets',
+          value: fleets
+        });
+
+        worker.postMessage({
+          type: 'simulation'
+        });
         return;
       }
 
       // Else, finish the simulation loop
       worker.terminate();
-      // Do stuff
+      // ToDo::Nico -- Stuff to do when simulation ends goes here
 
       return;
     }
@@ -101,6 +84,13 @@ function runSimulations(args, $scope) {
 
   };
 
+  // Pass the used fleets
+  worker.postMessage({
+    type: 'fleets',
+    value: fleets
+  });
+
+  // Here we goooooooo
   worker.postMessage({
     type: 'simulation'
   });
