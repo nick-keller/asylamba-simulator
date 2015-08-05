@@ -28,18 +28,18 @@ function simulation () {
   while (!attackingFleet.isEmpty() && !defendingFleet.isEmpty()) {
 
     // console.log('New round');
+    defendingFleet.cleanupEmptySquads();
+    attackingFleet.cleanupEmptySquads();
 
     for (var i = 0; i < linesEngaged; i++) {
       for (var j = defendingFleet.squads[i].length - 1; j >= 0; j--) {
         defendingFleet.squads[i][j].attack();
-        defendingFleet.cleanupEmptySquads();
       }
     }
 
     for (var i = 0; i < linesEngaged; i++) {
       for (var j = attackingFleet.squads[i].length - 1; j >= 0; j--) {
         attackingFleet.squads[i][j].attack();
-        attackingFleet.cleanupEmptySquads();
       }
     }
 
@@ -92,11 +92,6 @@ function Squad (array, team) {
 
   this.attack = function(targettedSquad) {
     // ToDo::Ben -- Put the counterstrike in place
-
-
-    defendingFleet.cleanupEmptySquads();
-    attackingFleet.cleanupEmptySquads();
-
 
     if (!targettedSquad) {
       if (this.target === undefined) {
