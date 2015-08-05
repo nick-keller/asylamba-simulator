@@ -16,7 +16,7 @@ var ships = [
     attaques: [7]
   },
   {
-    nom: 'Chimere',
+    name: 'Chimere',
     defense: 3,
     vitesse: 195,
     coque: 26,
