@@ -92,6 +92,9 @@ function Squad (array, team) {
 
   this.attack = function(targettedSquad) {
     // ToDo::Ben -- Put the counterstrike in place
+    if (attackingFleet.isEmpty() || defendingFleet.isEmpty()) {
+      return 0;
+    }
 
     if (!targettedSquad) {
       if (this.target === undefined) {
