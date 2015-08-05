@@ -1,8 +1,10 @@
 'use strict';
 // WRITE OPTIMIZED CODE IN HERE
 
-var attackingFleet = undefined;
-var defendingFleet = undefined;
+var ships;
+
+var attackingFleet;
+var defendingFleet;
 
 var linesEngaged = -1;
 var roundUntilNextLine = -1;
@@ -14,31 +16,44 @@ function getRandomInt(min, max) {
 function simulation () {
 
   if (!attackingFleet || !defendingFleet) {
-    postMessage({
-      type: 'log',
-      value: 'No fleet provided'
-    });
+    console.log('No fleet provided');
     return;
-  };
+  }
+
+  console.log(defendingFleet);
 
   linesEngaged = 1;
   roundUntilNextLine = 3;
+
   while (!attackingFleet.isEmpty() && !defendingFleet.isEmpty()) {
 
-    for (var i = linesEngaged; i >= 0; i--) {
-      // ToDo::Ben -- Make them fight
-      // ToDp::Ben -- Refactor the isEmpty system to a turn baser check
-    };
+    // console.log('New round');
 
-    if (linesEngaged === 5) {
-      continue;
+    for (var i = 0; i < linesEngaged; i++) {
+      for (var j = defendingFleet.squads[i].length - 1; j >= 0; j--) {
+        defendingFleet.squads[i][j].attack();
+        defendingFleet.cleanupEmptySquads();
+      }
     }
 
-    if (--roundUntilNextLine === 0) {
-      roundUntilNextLine = 3;
-      linesEngaged++;
+    for (var i = 0; i < linesEngaged; i++) {
+      for (var j = attackingFleet.squads[i].length - 1; j >= 0; j--) {
+        attackingFleet.squads[i][j].attack();
+        attackingFleet.cleanupEmptySquads();
+      }
     }
+
+    if (linesEngaged !== 5) {
+      if (--roundUntilNextLine === 0) {
+        roundUntilNextLine = 3;
+        linesEngaged++;
+      }
+    }
+
   }
+
+  console.log(attackingFleet);
+  console.log(defendsingFleet);
 
   // Simulation finished
   postMessage({
@@ -52,15 +67,8 @@ function Ship (model) {
   this.defense = model.defense;
   this.vitesse = model.vitesse ;
   this.coque = model.coque;
-  this.pev = model.pev;
-  this.attaques = model.attaques.splice();
-
-  this.attack = function(squad) {
-    if (squad.isEmpty() === true) {
-      return
-    }
-    // ToDo::Ben -- Fire on squad.ships[getRandomInt(0, squad.ships.size)]
-  };
+  // this.pev = model.pev;
+  this.attaques = model.attaques;
 }
 
 function Squad (array, team) {
@@ -70,42 +78,77 @@ function Squad (array, team) {
 
   this.team = team;
 
-  this.isEmpty = function() {
-    return (this.ships.length === 0);
-  }
 
-  for (var i = 0; i < 12; i++) {
-    for (var j = squad[i]; j >= 0; j--) {
-      // Pushing the correct number of this ship in the squad
+  // Initialization
+  for (var i = 0; i < 12; i++)
+    for (var j = array[i]; j >= 0; --j) {
+      if (array[i] === 0)
+        continue;
       this.ships.push(new Ship(ships[i]));
     }
-  }
+  this.isEmpty = function() {
+    return (this.ships.length === 0);
+  };
 
   this.attack = function(targettedSquad) {
+    // ToDo::Ben -- Put the counterstrike in place
+
+
+    defendingFleet.cleanupEmptySquads();
+    attackingFleet.cleanupEmptySquads();
+
 
     if (!targettedSquad) {
       if (this.target === undefined) {
-        if (this.team === 0) {
-          this.target = attackingFleet.getRandomSquad();
-        }
 
-        if (this.team === 1) {
+        if (this.team === 0)
+          this.target = attackingFleet.getRandomSquad();
+
+        if (this.team === 1)
           this.target = defendingFleet.getRandomSquad();
-        }
+
       }
       return this.attack(this.target);
     }
 
-    if (targettedSquad.isEmpty()) {
+    if (targettedSquad.isEmpty())
       return this.attack();
-    }
 
     // Order every ship to attack the target fleet
     for (var i = this.ships.length - 1; i >= 0; i--) {
-      this.ships[i].attack(squad);
-    };
+
+      targettedSquad.target = this;
+
+      if (targettedSquad.isEmpty())
+        return 1;
+
+      var attackingShip = this.ships[i];
+
+      for (var j = attackingShip.attaques.length - 1; j >= 0; j--) {
+
+        if (targettedSquad.isEmpty())
+          return 1;
+
+        var attackPower = attackingShip.attaques[j];
+
+        var targettedShipIndex = getRandomInt(0, targettedSquad.ships.length - 1);
+        var targettedShip = targettedSquad.ships[targettedShipIndex];
+
+        console.log(targettedSquad.ships);
+
+        console.log(attackingShip.name + ' fires on ' + targettedShip.name);
+
+        if ((80/targettedShip.vitesse) > Math.random())
+          targettedShip.coque -= Math.log((attackPower/targettedShip.defense) + 1)*4*attackPower;
 
 
+        // Destroy the ship
+        if (targettedShip.coque <= 0)
+          targettedSquad.ships.splice(targettedShipIndex, 1);
+
+      }
+
+    }
 
   };
 
@@ -115,60 +158,117 @@ function Fleet () {
   this.squads = [[], [], [], [], []];
 
   this.isEmpty = function () {
-    // ToDo::Ben -- Find an optimized way to check if the fleet is empty
+
+    for (var i = 4; i >= 0; i--)
+      for (var j = this.squads[i].length - 1; j >= 0; j--)
+        if (this.squads[i][j].isEmpty() === false)
+          return false;
+
+    return true;
+  };
+
+  this.cleanupEmptySquads = function () {
+    for (var i = 4; i >= 0; i--)
+      for (var j = this.squads[i].length - 1; j >= 0; j--)
+        if (this.squads[i][j].isEmpty() === true)
+          this.squads[i].splice(j, 1);
   };
 
   this.getRandomSquad = function() {
-    // ToDo::Ben -- Get a random, non-empty squad in an optimized way, almong the engaged lines
-  }
+
+    // ToDo::Ben -- FUCK THIS FUCKING PIECE OF SHIT. BRUTE FORCE FOR NOW
+    var i = getRandomInt(0, 4);
+    var j = getRandomInt(0, 4);
+
+    if (this.squads[i][j] === undefined || this.squads[i][j].isEmpty())
+      return this.getRandomSquad();
+
+    return this.squads[i][j];
+
+
+
+    // var squadCount = 0;
+
+    // for (var i = this.squads.length - 1; i >= 0; i--)
+    //   squadCount += this.squads[i].length;
+
+    // var randomIndex = getRandomInt(0, squadCount-1);
+
+    // console.log(randomIndex);
+
+    // for (var i = 0; i < this.squads.length - 1; i++) {
+
+    //   console.log(randomIndex, this.squads[i].length)
+    //   if (randomIndex >= this.squads[i].length) {
+    //     randomIndex -= this.squads[i].length;
+    //     continue;
+    //   }
+
+    //   return this.squads[i][randomIndex];
+    // }
+
+    // throw 'NOT SUPPOSED TO ARRIVE HERE';
+
+  };
 
   this.addSquad = function (squad, line) {
-    this.squad[line].push(squad);
+    this.squads[line].push(squad);
   };
 
 }
 
 function setFleets (args) {
   // Splitting every individual ship
-    defendingFleet = new Fleet();
-    for (var line = 0; line < 5; line++) {
-      for (var rank = 0; rank < 5; rank++) {
+  var line;
+  var rank;
 
-        var squad = new Squad(args.defending[line][rank], 0);
+  console.log('Fleets set');
 
-        if (squad.isEmpty() === true) {
-          defendingFleet.addSquad(squad, line)
-        }
+  defendingFleet = new Fleet();
+  for (line = 0; line < 5; line++) {
+    for (rank = 0; rank < 5; rank++) {
 
+
+      var squad = new Squad(args.defending[line][rank], 0);
+
+
+      if (squad.isEmpty() === false) {
+        defendingFleet.addSquad(squad, line);
       }
+
     }
-
-    attackingFleet = new Fleet();
-    for (var line = 0; line < 5; line++) {
-      for (var rank = 0; rank < 5; rank++) {
-
-        var squad = new Squad(args.defending[line][rank], 1);
-
-        if (squad.isEmpty() === true) {
-          attackingFleet.addSquad(squad, line)
-        }
-
-      }
-    }
-
-
   }
+
+  attackingFleet = new Fleet();
+  for (line = 0; line < 5; line++) {
+    for (rank = 0; rank < 5; rank++) {
+
+      var squad = new Squad(args.defending[line][rank], 1);
+
+      if (squad.isEmpty() === false) {
+        attackingFleet.addSquad(squad, line);
+      }
+
+    }
+  }
+
+
 }
 
 onmessage = function(e) {
+
+  if (e.data.type === 'simulation') {
+    simulation();
+    return;
+  }
 
   if (e.data.type === 'fleets') {
     setFleets(e.data.value);
     return;
   }
 
-  if (e.data.type === 'simulation') {
-    simulation();
+  if (e.data.type === 'ships.js') {
+    ships = e.data.value;
     return;
   }
 
@@ -178,4 +278,4 @@ onmessage = function(e) {
   console.log('\ndata:');
   console.log(e.data.value);
 
-}
+};

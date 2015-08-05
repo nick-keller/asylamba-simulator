@@ -6,15 +6,15 @@ function runSimulations(args) {
   var counter = iterations;
 
   var testFleet = [
-    [[7,4,3,0,2,0,0,0,0,0,0,0],[4,4,0,4,3,0,4,0,0,0,0,0],[2,2,0,3,0,0,2,3,0,2,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
-    [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
-    [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
-    [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
-    [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]]
+    [[9,4,3,0,2,0,0,0,0,0,0,0],[9,4,0,4,3,0,4,0,0,0,0,0],[9,2,0,3,0,0,2,3,0,2,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0]],
+    [[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0]],
+    [[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0]],
+    [[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0]],
+    [[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0],[9,0,0,0,0,0,0,0,0,0,0,0]]
   ];
   var fleets = {
-    attacking: args.attackingFleet || testFleet.slice(),
-    defending: args.defendingFleet || testFleet.slice()
+    attacking: /*args.attackingFleet ||*/ testFleet.slice(),
+    defending: /*args.defendingFleet ||*/ testFleet.slice()
   };
 
 
@@ -36,18 +36,14 @@ function runSimulations(args) {
 
   var worker = new Worker('src/task.js');
 
-  // Pass the used fleets
+  // Pass the ships object
   worker.postMessage({
-    type: 'fleets',
-    data: fleets
+    type: 'ships.js',
+    value: ships
   });
 
   // Preparing recursive call
   worker.onmessage = function(e) {
-    if (e.data.type === 'log') {
-      console.log('Worker log:\n' + e.data.value);
-      return;
-    }
 
     if (e.data.type === 'finishedSimulation') {
       // ToDo::Nico -- Update UI with 'iterations', 'counter', and 'e.data'
@@ -55,6 +51,14 @@ function runSimulations(args) {
 
       // If we haven't reached the final loop, start another simulation
       if (counter-- !== 0) {
+
+        // Pass the used fleets
+        // ToDo::Ben -- Switch the fleets creation to the browser
+        worker.postMessage({
+          type: 'fleets',
+          value: fleets
+        });
+
         worker.postMessage({
           type: 'simulation'
         });
@@ -75,6 +79,12 @@ function runSimulations(args) {
     console.log(e.data.value);
 
   };
+
+  // Pass the used fleets
+  worker.postMessage({
+    type: 'fleets',
+    value: fleets
+  });
 
   // Here we goooooooo
   worker.postMessage({
