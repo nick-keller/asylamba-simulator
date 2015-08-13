@@ -51,7 +51,7 @@ function runSimulations(args, $scope) {
   worker.onmessage = function(e) {
 
     if (e.data.type === 'finishedSimulation') {
-      updateProgress(100 - iterations/$scope.numberIterations *100);
+      updateProgress(100 - counter/iterations *100);
 
       // If we haven't reached the final loop, start another simulation
       if (counter-- !== 0) {

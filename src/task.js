@@ -20,7 +20,7 @@ function simulation () {
     return;
   }
 
-  console.log(defendingFleet);
+  // console.log(defendingFleet);
 
   linesEngaged = 1;
   roundUntilNextLine = 3;
@@ -52,8 +52,8 @@ function simulation () {
 
   }
 
-  console.log(attackingFleet);
-  console.log(defendsingFleet);
+  // console.log(attackingFleet);
+  // console.log(defendingFleet);
 
   // Simulation finished
   postMessage({
@@ -109,8 +109,12 @@ function Squad (array, team) {
       return this.attack(this.target);
     }
 
-    if (targettedSquad.isEmpty())
+    if (targettedSquad.isEmpty()) {
+      this.target = undefined;
       return this.attack();
+    }
+
+    // console.log('Squad ', this, ' attacks ', targettedSquad);
 
     // Order every ship to attack the target fleet
     for (var i = this.ships.length - 1; i >= 0; i--) {
@@ -132,9 +136,9 @@ function Squad (array, team) {
         var targettedShipIndex = getRandomInt(0, targettedSquad.ships.length - 1);
         var targettedShip = targettedSquad.ships[targettedShipIndex];
 
-        console.log(targettedSquad.ships);
+        // console.log(targettedSquad.ships);
 
-        console.log(attackingShip.name + ' fires on ' + targettedShip.name);
+        // console.log(attackingShip.name + ' at ' + i + ' fires on ' + targettedShip.name + ' at ' + targettedShipIndex);
 
         if ((80/targettedShip.vitesse) > Math.random())
           targettedShip.coque -= Math.log((attackPower/targettedShip.defense) + 1)*4*attackPower;
