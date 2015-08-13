@@ -90,7 +90,7 @@ function Squad (array, team) {
     return (this.ships.length === 0);
   };
 
-  this.attack = function(targettedSquad) {
+  this.attack = function(targettedSquad, counterStrikeBool) {
     // ToDo::Ben -- Put the counterstrike in place
     if (attackingFleet.isEmpty() || defendingFleet.isEmpty()) {
       return 0;
@@ -122,14 +122,14 @@ function Squad (array, team) {
       targettedSquad.target = this;
 
       if (targettedSquad.isEmpty())
-        return 1;
+        break;
 
       var attackingShip = this.ships[i];
 
       for (var j = attackingShip.attaques.length - 1; j >= 0; j--) {
 
         if (targettedSquad.isEmpty())
-          return 1;
+          break;
 
         var attackPower = attackingShip.attaques[j];
 
@@ -150,6 +150,10 @@ function Squad (array, team) {
 
       }
 
+    }
+
+    if (!counterStrikeBool) {
+      targettedSquad.attack(this, true);
     }
 
   };
