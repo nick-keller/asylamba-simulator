@@ -22,11 +22,12 @@ angular.module('sim')
         $scope.updateCompos = function() {
             $scope.compos = [];
             _.forEach($cookies.getAll(), function(json, name) {
-
-                $scope.compos.push({
-                    name: name,
-                    data: decodeFleet(json)
-                });
+                if (name.indexOf('fleet_') === 0) {
+                    $scope.compos.push({
+                        name: name.slice(6),
+                        data: decodeFleet(json)
+                    });
+                }
             });
         };
 
@@ -45,19 +46,19 @@ angular.module('sim')
 
         $scope.save = function($event) {
             if($scope.compoName && (!$event || $event.keyCode == 13)) {
-                $cookies.put($scope.compoName, encodeFleet($scope.fleet));
+                $cookies.put('fleet_' + $scope.compoName, encodeFleet($scope.fleet));
                 $scope.updateCompos();
             }
         };
 
         $scope.load = function(name) {
             $scope.compoName = name;
-            $scope.fleet = decodeFleet($cookies.get(name));
+            $scope.fleet = decodeFleet($cookies.get('fleet_' + name));
             $scope.selectSquadron(0,0);
         };
 
         $scope.remove = function(name) {
-            $cookies.remove(name);
+            $cookies.remove('fleet_' + name);
             $scope.updateCompos();
         };
 
