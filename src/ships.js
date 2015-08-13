@@ -5,7 +5,8 @@ var ships = [
     vitesse: 195,
     coque: 26,
     pev: 2,
-    attaques: [5]
+    attaques: [5],
+    index: 0
   },
   {
     name: 'Satyre',
@@ -13,7 +14,8 @@ var ships = [
     vitesse: 190,
     coque: 33,
     pev: 3,
-    attaques: [7]
+    attaques: [7],
+    index: 1
   },
   {
     name: 'Chimere',
@@ -21,7 +23,8 @@ var ships = [
     vitesse: 195,
     coque: 26,
     pev: 3,
-    attaques: [6, 6]
+    attaques: [6, 6],
+    index: 2
   },
   {
     name: 'Sirene',
@@ -29,7 +32,8 @@ var ships = [
     vitesse: 190,
     coque: 65,
     pev: 5,
-    attaques: [2, 2, 20]
+    attaques: [2, 2, 20],
+    index: 3
   },
   {
     name: 'Dryade',
@@ -37,7 +41,8 @@ var ships = [
     vitesse: 165,
     coque: 90,
     pev: 7,
-    attaques: [30]
+    attaques: [30],
+    index: 4
   },
   {
     name: 'Meduse',
@@ -45,7 +50,8 @@ var ships = [
     vitesse: 145,
     coque: 75,
     pev: 9,
-    attaques: [20, 12, 12, 12, 12, 7, 7, 7]
+    attaques: [20, 12, 12, 12, 12, 7, 7, 7],
+    index: 5
   },
   {
     name: 'Griffon',
@@ -53,7 +59,8 @@ var ships = [
     vitesse: 100,
     coque: 250,
     pev: 23,
-    attaques: [15, 15, 15, 15]
+    attaques: [15, 15, 15, 15],
+    index: 6
   },
   {
     name: 'Cyclope',
@@ -61,7 +68,8 @@ var ships = [
     vitesse: 90,
     coque: 320,
     pev: 45,
-    attaques: [225]
+    attaques: [225],
+    index: 7
   },
   {
     name: 'Minotaure',
@@ -69,7 +77,8 @@ var ships = [
     vitesse: 88,
     coque: 1200,
     pev: 75,
-    attaques: [10, 10, 25, 35, 35, 35, 35]
+    attaques: [10, 10, 25, 35, 35, 35, 35],
+    index: 8
   },
   {
     name: 'Hydre',
@@ -77,7 +86,8 @@ var ships = [
     vitesse: 75,
     coque: 1050,
     pev: 86,
-    attaques: [21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21] // lol
+    attaques: [21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21],
+    index: 9
   },
   {
     name: 'Cerbere',
@@ -85,7 +95,8 @@ var ships = [
     vitesse: 80,
     coque: 1220,
     pev: 82,
-    attaques: [6, 6, 6, 25, 25, 25, 25, 50, 50, 175]
+    attaques: [6, 6, 6, 25, 25, 25, 25, 50, 50, 175],
+    index: 10
   },
   {
     name: 'Phenix',
@@ -93,6 +104,7 @@ var ships = [
     vitesse: 75,
     coque: 1350,
     pev: 84,
-    attaques: [6, 6, 6, 25, 25, 25, 25, 50, 50, 50, 50, 200]
+    attaques: [6, 6, 6, 25, 25, 25, 25, 50, 50, 50, 50, 200],
+    index: 11
   }
 ];

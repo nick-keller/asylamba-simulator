@@ -16,18 +16,15 @@ function getRandomInt(min, max) {
 function simulation () {
 
   if (!attackingFleet || !defendingFleet) {
-    console.log('No fleet provided');
+    console.warn('No fleet provided');
     return;
   }
-
-  // console.log(defendingFleet);
 
   linesEngaged = 1;
   roundUntilNextLine = 3;
 
   while (!attackingFleet.isEmpty() && !defendingFleet.isEmpty()) {
 
-    // console.log('New round');
     defendingFleet.cleanupEmptySquads();
     attackingFleet.cleanupEmptySquads();
 
@@ -52,23 +49,21 @@ function simulation () {
 
   }
 
-  // console.log(attackingFleet);
-  // console.log(defendingFleet);
-
   // Simulation finished
   postMessage({
     type: 'finishedSimulation',
-    value: ''
+    value: getWinningFleet()
   });
 }
 
 function Ship (model) {
-  this.name = model.name;
+  //this.name = model.name;
   this.defense = model.defense;
   this.vitesse = model.vitesse ;
   this.coque = model.coque;
   // this.pev = model.pev;
   this.attaques = model.attaques;
+  this.index = model.index;
 }
 
 function Squad (array, team) {
@@ -80,18 +75,20 @@ function Squad (array, team) {
 
 
   // Initialization
-  for (var i = 0; i < 12; i++)
-    for (var j = array[i]; j >= 0; --j) {
+  for (var i = 0; i < 12; i++) {
+    for (var j = array[i]; j > 0; j--) {
       if (array[i] === 0)
         continue;
       this.ships.push(new Ship(ships[i]));
     }
+  }
+
+
   this.isEmpty = function() {
     return (this.ships.length === 0);
   };
 
   this.attack = function(targettedSquad, counterStrikeBool) {
-    // ToDo::Ben -- Put the counterstrike in place
     if (attackingFleet.isEmpty() || defendingFleet.isEmpty()) {
       return 0;
     }
@@ -114,31 +111,25 @@ function Squad (array, team) {
       return this.attack();
     }
 
-    // console.log('Squad ', this, ' attacks ', targettedSquad);
-
     // Order every ship to attack the target fleet
     for (var i = this.ships.length - 1; i >= 0; i--) {
 
       targettedSquad.target = this;
 
       if (targettedSquad.isEmpty())
-        break;
+        return 1;
 
       var attackingShip = this.ships[i];
 
       for (var j = attackingShip.attaques.length - 1; j >= 0; j--) {
 
         if (targettedSquad.isEmpty())
-          break;
+          return 1;
 
         var attackPower = attackingShip.attaques[j];
 
         var targettedShipIndex = getRandomInt(0, targettedSquad.ships.length - 1);
         var targettedShip = targettedSquad.ships[targettedShipIndex];
-
-        // console.log(targettedSquad.ships);
-
-        // console.log(attackingShip.name + ' at ' + i + ' fires on ' + targettedShip.name + ' at ' + targettedShipIndex);
 
         if ((80/targettedShip.vitesse) > Math.random())
           targettedShip.coque -= Math.log((attackPower/targettedShip.defense) + 1)*4*attackPower;
@@ -203,8 +194,6 @@ function setFleets (args) {
   var line;
   var rank;
 
-  console.log('Fleets set');
-
   defendingFleet = new Fleet();
   for (line = 0; line < 5; line++) {
     for (rank = 0; rank < 5; rank++) {
@@ -236,6 +225,31 @@ function setFleets (args) {
 
 }
 
+function getWinningFleet () {
+  var winningFleet = [
+    [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
+    [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
+    [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
+    [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
+    [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]]
+  ];
+
+  winningFleet.team = attackingFleet.isEmpty() ? 0 : 1;
+  console.log(winningFleet.team);
+  var fleetRef = (winningFleet.team === 0 ? defendingFleet : attackingFleet);
+
+  for (var i = fleetRef.length - 1; i >= 0; i--) {
+    for (var j = fleetRef[i].length - 1; j >= 0; j--) {
+      for (var k = fleetRef[i][j].length - 1; k >= 0; k--) {
+        winningFleet[i][j][fleetRef[i][j][k].index]++;
+      }
+    }
+  }
+
+  return winningFleet;
+
+}
+
 onmessage = function(e) {
 
   if (e.data.type === 'simulation') {
@@ -253,10 +267,10 @@ onmessage = function(e) {
     return;
   }
 
-  console.log('Unknown message received from browser.');
-  console.log('\ntype:');
-  console.log(e.data.type);
-  console.log('\ndata:');
-  console.log(e.data.value);
+  console.warn('Unknown message received from browser.');
+  console.warn('\ntype:');
+  console.warn(e.data.type);
+  console.warn('\ndata:');
+  console.warn(e.data.value);
 
 };
