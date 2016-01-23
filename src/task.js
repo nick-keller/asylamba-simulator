@@ -88,7 +88,7 @@ function Squad (array, team) {
     return (this.ships.length === 0);
   };
 
-  this.attack = function(targettedSquad, counterStrikeBool) {
+  this.attack = function(targettedSquad) {
     if (attackingFleet.isEmpty() || defendingFleet.isEmpty()) {
       return 0;
     }
@@ -141,10 +141,6 @@ function Squad (array, team) {
 
       }
 
-    }
-
-    if (!counterStrikeBool) {
-      targettedSquad.attack(this, true);
     }
 
   };
@@ -235,7 +231,7 @@ function getWinningFleet () {
   ];
 
   winningFleet.team = attackingFleet.isEmpty() ? 0 : 1;
-  console.log(winningFleet.team);
+  // console.log(winningFleet.team);
   var fleetRef = (winningFleet.team === 0 ? defendingFleet : attackingFleet);
 
   for (var i = fleetRef.length - 1; i >= 0; i--) {
