@@ -209,7 +209,7 @@ function setFleets (args) {
   for (line = 0; line < 5; line++) {
     for (rank = 0; rank < 5; rank++) {
 
-      var squad = new Squad(args.defending[line][rank], 1);
+      var squad = new Squad(args.attacking[line][rank], 1);
 
       if (squad.isEmpty() === false) {
         attackingFleet.addSquad(squad, line);
