@@ -44,6 +44,32 @@
                     <div style="width: {{ progress }}%"></div>
                 </div>
             </div>
+
+            <div id="results" ng-if="flotte0 > 0">
+            <h2>Resultats</h2>
+            <h3>Flotte attaquante victorieuse : {{ flotte1 }} fois</h3>
+            <strong>Nombre moyen de vaisseaux restant</strong>
+            <div ng-repeat="ship in averageFleet[1] track by $index">
+                <div ng-switch on="ship">
+                    <div ng-switch-when="0"></div>
+                    <div ng-switch-default>
+                        {{ $parent.$parent.ships[$index].name }} : {{ ship / numberIterations}}
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <h3>Flotte en défense victorieuse : {{ flotte0 }} fois</h3>
+            <strong>Nombre moyen de vaisseaux restant</strong>
+            <div ng-repeat="ship in averageFleet[0] track by $index">
+                <div ng-switch on="ship">
+                    <div ng-switch-when="0"></div>
+                    <div ng-switch-default>
+                        {{ $parent.$parent.ships[$index].name }} : {{ ship / numberIterations}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
         </div>
     </div>
 

@@ -234,10 +234,10 @@ function getWinningFleet () {
   // console.log(winningFleet.team);
   var fleetRef = (winningFleet.team === 0 ? defendingFleet : attackingFleet);
 
-  for (var i = fleetRef.length - 1; i >= 0; i--) {
-    for (var j = fleetRef[i].length - 1; j >= 0; j--) {
-      for (var k = fleetRef[i][j].length - 1; k >= 0; k--) {
-        winningFleet[i][j][fleetRef[i][j][k].index]++;
+    for (var i = fleetRef.squads.length - 1; i >= 0; i--) {
+    for (var j = fleetRef.squads[i].length - 1; j >= 0; j--) {
+      for (var k = fleetRef.squads[i][j].ships.length - 1; k >= 0; k--) {
+        winningFleet[i][j][fleetRef.squads[i][j].ships[k].index] += 1;
       }
     }
   }
