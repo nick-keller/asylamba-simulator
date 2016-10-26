@@ -14,7 +14,7 @@
                 Total PEV
                 <span class="value">
                     {{ totalPev() }}
-                    <img src="http://game.asylamba.com/s7/public/media/resources/pev.png">
+                    <img src="http://game.asylamba.com/s12/public/media/resources/pev.png">
                 </span>
             </td>
             <td style="width: 50%">
@@ -45,7 +45,7 @@
 </div>
 <div class="list-ship">
     <label class="ship" ng-repeat="ship in selectedSquadron track by $index" ng-class="{empty:!ship}">
-        <img src="http://game.asylamba.com/s7/public/media/ship/picto/ship{{ $index }}.png">
+        <img src="http://game.asylamba.com/s12/public/media/ship/picto/ship{{ $index }}.png">
         <span class="text">
             <input type="number" min="0" ng-model="selectedSquadron[$index]">
             <span>{{ $parent.$parent.ships[$index].name }}</span>
