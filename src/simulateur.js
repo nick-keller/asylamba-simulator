@@ -5,16 +5,19 @@ function runSimulations(args, $scope) {
   var iterations = args.iterations;
   var counter = iterations;
 
-  var testFleet = [
+  /* var testFleet = [
     [[1,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
     [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
     [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
     [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]],
     [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]]
-  ];
+  ]; */
+  var fightResults = [0, 0]; //number of times team(1||0) won a fight.
+  var averageFleet = [[0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0]]; // used to display the average remaining ships after the fight.
+
   var fleets = {
-    attacking: /*args.attackingFleet ||*/ testFleet.slice(),
-    defending: /*args.defendingFleet ||*/ testFleet.slice()
+    attacking: args.attackingFleet /*|| testFleet.slice()*/,
+    defending: args.defendingFleet /*|| testFleet.slice()*/
   };
 
   //fleets.defending[0][0][6] = 1;
@@ -58,6 +61,16 @@ function runSimulations(args, $scope) {
       // If we haven't reached the final loop, start another simulation
       if (counter-- !== 0) {
 
+        //update fight statistics
+        for (var i = e.data.value.length - 1; i >= 0; i--) {
+          for (var j = e.data.value[i].length - 1; j >= 0; j--) {
+            for (var k = e.data.value[i][j].length - 1; k >= 0; k--) {  //for each row of winning fleet, for each columns, foreach ship
+                averageFleet[e.data.value.team][k] = averageFleet[e.data.value.team][k] + e.data.value[i][j][k];
+            }
+          }
+        }
+        fightResults[e.data.value.team]++;
+
         // Pass the used fleets
         // ToDo::Ben -- Switch the fleets creation to the browser
         worker.postMessage({
@@ -73,7 +86,9 @@ function runSimulations(args, $scope) {
 
       // Else, finish the simulation loop
       worker.terminate();
-      // ToDo::Nico -- Stuff to do when simulation ends goes here
+      $scope.flotte0 = fightResults[0];
+      $scope.flotte1 = fightResults[1];
+      $scope.averageFleet = averageFleet;
 
       return;
     }

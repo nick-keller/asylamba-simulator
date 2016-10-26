@@ -14,19 +14,19 @@
 
     <div class="container">
         <h1>
-            <img src="http://game.asylamba.com/s7/public/media/map/action/loot.png">
+            <img src="http://game.asylamba.com/s12/public/media/map/action/loot.png">
             Simulateur de combats
         </h1>
         <div class="user-selector">
             <div class="user" ng-click="user = 'attacker'" ng-class="{active:user == 'attacker'}">
                 <div>
-                    <img src="http://game.asylamba.com/s7/public/media/common/nav-fleet-attack.png">
+                    <img src="http://game.asylamba.com/s12/public/media/common/nav-fleet-attack.png">
                 </div>
                 Flotte en attaque
             </div>
             <div class="user" ng-click="user = 'defender'" ng-class="{active:user == 'defender'}">
                 <div>
-                    <img src="http://game.asylamba.com/s7/public/media/common/nav-fleet-defense.png">
+                    <img src="http://game.asylamba.com/s12/public/media/common/nav-fleet-defense.png">
                 </div>
                 Flotte en défense
             </div>
@@ -44,6 +44,32 @@
                     <div style="width: {{ progress }}%"></div>
                 </div>
             </div>
+
+            <div id="results" ng-if="flotte0 > 0">
+            <h2>Resultats</h2>
+            <h3>Flotte attaquante victorieuse : {{ flotte1 }} fois</h3>
+            <strong>Nombre moyen de vaisseaux restant</strong>
+            <div ng-repeat="ship in averageFleet[1] track by $index">
+                <div ng-switch on="ship">
+                    <div ng-switch-when="0"></div>
+                    <div ng-switch-default>
+                        {{ $parent.$parent.ships[$index].name }} : {{ ship / numberIterations}}
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <h3>Flotte en défense victorieuse : {{ flotte0 }} fois</h3>
+            <strong>Nombre moyen de vaisseaux restant</strong>
+            <div ng-repeat="ship in averageFleet[0] track by $index">
+                <div ng-switch on="ship">
+                    <div ng-switch-when="0"></div>
+                    <div ng-switch-default>
+                        {{ $parent.$parent.ships[$index].name }} : {{ ship / numberIterations}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
         </div>
     </div>
 
